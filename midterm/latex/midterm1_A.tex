@@ -1,0 +1,97 @@
+\documentclass[a4paper, 11pt]{article}
+
+% packages
+\usepackage{kotex}
+\usepackage{amssymb}
+\usepackage{booktabs, caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{fullpage}
+\usepackage{algorithm, algpseudocode, algorithmicx}
+
+\title{Report of Question1-A}
+\author{2019xxxxxx 박준영}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section{Node Type}
+기본적인 Binary Search Tree의 node 구조체에 tree에 있는 key의 개수를 나타내는 count 변수를 넣었다.
+\\
+
+\begin{center}
+	\begin{threeparttable}
+		\caption{count가 추가된 node type}
+		\begin{tabular}{|c|l|}
+			\hline
+			이름 & 설명\\
+			\hline
+			value & node의 값\\
+			count & tree에 있는 해당 key의 개수\\
+			leftChild & left subtree의 root 노드\\
+			rightChild & right subtree의 root 노드\\
+		\hline
+		\end{tabular}
+	\end{threeparttable}
+\end{center}
+
+\section{Insertion}
+기존 Binary Search Tree의 insert에서 count를 변경하는 부분을 추가했다.
+\\
+
+\begin{algorithm}
+	\caption{BST with count field insertion}
+	\begin{algorithmic}
+		\Function{Insert}{root, value}
+			\If{root is null}
+				\State root becomes a new node with value
+				\State root.count $\gets$ 1
+			\ElsIf{root.value $>$ value}
+				\State root.leftChild = Insert(root.leftChild, value)
+			\ElsIf{root.value $<$ value}
+				\State root.rightChild = Insert(root.rightChild, value)
+			\Else
+				\State add 1 to root.count
+			\EndIf
+			
+			\State \Return{root}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+\pagebreak
+
+\section{Deletion}
+기존 Binary Search Tree의 delete에서 count를 고려하여 처리하도록 변경했다.
+\\
+
+\begin{algorithm}
+	\caption{BST with count field deletion}
+	\begin{algorithmic}
+		\Function{Delete}{root, value}
+			\If{root is null}
+				\State produce error message
+			\ElsIf{root.value $>$ value}
+				\State root.leftChild = Delete(root.leftChild, value)
+			\ElsIf{root.value $<$ value}
+				\State root.rightChild = Delete(root.rightChild, value)
+			\ElsIf{root.count $>$ 1}
+				\State subtract 1 to root.count
+			\ElsIf{root has neither left child nor right child}
+				\State set root value to min value of left subtree
+				\State root.leftChild = Delete(root.leftChild, root.value)
+			\Else
+				\If{root don't have left child}
+					\State set root to right child node
+				\ElsIf{root don't have right child}
+					\State set root to left child node
+				\EndIf
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Finding}
+기존 Binary Search Tree의 find와 동일하다.
+
+\end{document}

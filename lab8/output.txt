@@ -1,0 +1,15 @@
+insert 4
+insert 1
+insert 9
+insert 10
+insert 5
+insert 6
+6 is already in the heap.
+insert 11
+insert 7
+insert 2
+insert 8
+Heap is full
+10 is in the heap.
+5 is in the heap.
+11 9 10 7 8 4 6 1 2 5 

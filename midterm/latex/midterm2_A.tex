@@ -1,0 +1,45 @@
+\documentclass[a4paper, 11pt]{article}
+
+% packages
+\usepackage{kotex}
+\usepackage{amssymb}
+\usepackage{booktabs, caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{fullpage}
+\usepackage{algorithm, algpseudocode, algorithmicx}
+
+\title{Report of Question2-A}
+\author{2019xxxxxx 박준영}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Implementation}
+분할정복(Divide and Conquer)을 이용해 해결했다. 전체 tree를 여러 개의 tree로 쪼개어 각 부분에서 주어진 범위에 있는 node의 개수를 각각 구해 전부 합치는 방식으로 구현했다.
+
+\begin{algorithm}
+	\caption{Range search}
+	\begin{algorithmic}
+		\Function{RangeSearch}{node, k1, k2}\Comment{k1 is lower bound, k2 is upper bound}
+			\If{node is null}
+				\State \Return{0}
+			\EndIf\\
+						
+			\If{node's value $\in$ [k1, k2]}
+				\State leftCount $\gets$ RangeSearch(node.leftChild, k1, k2)
+				\State rightCount $\gets$ RangeSearch(node.rightChild, k1, k2)
+				\State \Return{1 + leftCount + rightCount}
+			\ElsIf{node's value $<$ k1}
+				\State \Return{RangeSearch(node.rightChild, k1, k2)}
+			\Else
+				\State \Return{RangeSearch(node.leftChild, k1, k2)}
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Time complexity}
+Binary Search Tree에서 lower bound와 같거나 큰 node를 찾는 것은 O($h$)의 시간이 소요된다. (단, $h$는 BST의 height) 또한, tree를 순회하면서 node의 value가 $[k1,k2]$ 안에 있으면 count를 1 증가하는 것은 range의 안에 속하는 node 개수 $k$에 대하여 O($k$)의 시간이 소요된다. 따라서 위 알고리즘의 time complexity는 O($h+k$)
+
+\end{document}

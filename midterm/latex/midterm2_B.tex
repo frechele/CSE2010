@@ -1,0 +1,201 @@
+\documentclass[a4paper, 11pt]{article}
+
+% packages
+\usepackage{kotex}
+\usepackage{amssymb}
+\usepackage{booktabs, caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{fullpage}
+\usepackage{algorithm, algpseudocode, algorithmicx}
+\usepackage[edges]{forest}
+
+\usetikzlibrary{shapes.geometric}
+
+\title{Report of Question2-B}
+\author{2019xxxxxx 박준영}
+\date{}
+
+\forestset{%
+	default preamble={
+		for tree={
+			circle,
+			draw,
+			inner sep=0pt,
+			minimum size=1cm,
+			font=\scriptsize,
+			anchor=north
+		}
+	},
+	ssarbre/.style={isosceles triangle,
+			draw,
+			shape border rotate=90,
+			minimum size=2cm,
+			child anchor=apex,
+			anchor=apex}
+}
+
+\begin{document}
+\maketitle
+
+\section{Idea}
+A에서 구현한 RangeSearch의 경우, tree의 height $h$와 range에 포함되는 node의 개수 $k$만큼 반복이 필요해 전체 time complexity가 O($h+k$)였다. 하지만, 각 node보다 작은 node의 개수만 알 수 있다면 lower bound와 upper bound만 찾으면 되어 range에 포함되는 node의 개수만큼 반복을 할 필요가 없어진다. 그렇다면 O($h$)의 time complexity로 RangeSearch를 수행할 수 있을 것이다.
+
+\section{Node Type}
+기본적인 Binary Search Tree의 node 구조체에 현재 node가 root인 subtree의 크기를 의미하는 size를 추가하였다.
+
+\begin{center}
+	\begin{threeparttable}
+		\caption{count가 추가된 node type}
+		\begin{tabular}{|c|l|}
+			\hline
+			이름 & 설명\\
+			\hline
+			value & node의 값\\
+			size & 현재 subtree에 속한 node의 개수\\
+			leftChild & left subtree의 root 노드\\
+			rightChild & right subtree의 root 노드\\
+			\hline
+		\end{tabular}
+	\end{threeparttable}
+\end{center}
+
+\section{Calculating smaller nodes count}
+BST에서 node의 rank는 해당 node보다 작은 node의 개수와 같다. 각 node를 root로 하는 subtree를 이루는 node의 개수를 알고 있으면 해당 node의 rank를 구할 수 있다.
+\\
+
+\begin{center}
+\begin{forest}
+	[A [T$_1$, ssarbre] [B [T$_2$, ssarbre] [T$_3$, ssarbre]]]
+\end{forest}
+\end{center}
+
+위 그림에서 B보다 작은 node의 개수는 A보다 B의 left subtree인 T$_2$의 크기만큼 크다. 따라서 B의 rank는 A의 rank에서 T$_2$의 크기를 더한 것임을 알 수 있다.
+\pagebreak
+
+\begin{center}
+	\begin{forest}
+		[A [B [T$_1$, ssarbre] [T$_2$, ssarbre]] [T$_3$, ssarbre]]
+	\end{forest}
+\end{center}
+
+위 그림에서 B보다 작은 node의 개수는 A보다 B의 right subtree인 T$_2$의 크기만큼 작다. 따라서 B의 rank는 A의 rank에서 T$_2$의 크기만큼 뺀 것임을 알 수 있다. 이를 알고리즘으로 나타낸 것은 다음과 같다.
+\\
+\begin{algorithm}
+	\caption{Calculating rank}
+	\begin{algorithmic}
+		\Function{Rank}{root, value}
+			\If{root is null}
+				\State \Return{0}
+			\EndIf
+			\\
+			\State rank $\gets$ 0
+			\While{root is not null}
+				\If{root.value $>$ value}
+					\State root = root.leftChild
+				\ElsIf{root.value $<$ value}
+					\State rank $\gets$ rank + 1 + (left child's size)
+					\State root = root.rightChild
+				\Else
+					\State \Return {rank + (left child's size)}
+				\EndIf
+			\EndWhile
+			\\
+			\State \Return {NOT\_FOUND} \Comment{Cannot find value in BST}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+\section{Insertion}
+기존 BST의 insert에서 tree의 size를 계산하는 부분이 추가되었다.
+\pagebreak
+
+\begin{algorithm}
+	\caption{BST with tree size insertion}
+	\begin{algorithmic}
+		\Function{Insert}{root, value}
+			\If{root is null}
+				\State root becomes a new node with value
+				\State root.size $\gets$ 1
+			\ElsIf{root.value $>$ value}
+				\State root.leftChild = Insert(root.leftChild, value)
+				\State add 1 to root.size
+			\ElsIf{root.value $<$ value}
+				\State root.rightChild = Insert(root.rightChild, value)
+				\State add 1 to root.size
+			\Else
+				\State produce duplicated error message
+			\EndIf
+			
+			\State \Return{root}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Deletion}
+기존 BST의 delete에서 tree의 size를 계산하는 부분이 추가되었다.
+
+\begin{algorithm}
+	\caption{BST with duplicated node list deletion}
+	\begin{algorithmic}
+		\Function{Delete}{root, value}
+			\If{root is null}
+				produce error message
+			\ElsIf{root.value $>$ value}
+				\State root.leftChild = Delete(root.leftChild, value)
+				\State subtract 1 to root.size
+			\ElsIf{root.value $<$ value}
+				\State root.rightChild = Delete(root.rightChild, value)
+				\State subtract 1 to root.size
+			\ElsIf{root has neither left child nor right child}
+				\State set root value to min value of left subtree
+				\State root.leftChild = Delete(root.leftChild, root.value)
+				\State subtract 1 to root.size
+			\Else
+				\If{root don't have left child}
+				set root to right child node
+				\ElsIf{root don't have right child}
+				set root to left child node
+				\EndIf
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+\pagebreak
+
+\section{RangeSearch}
+ 
+\subsection{Finding lower bound}
+lower bound는 찾고자하는 값과 같거나 작은 최대의 node를 의미한다. 따라서 root node부터 시작하여 주어진 value보다 작은 값이 나오면 해당 node의 rank를 저장하며 조금씩 큰 node를 찾아 value보다 작거나 같은 최대의 node를 반환하면 된다. 코드의 \emph{FindLowerBoundRank}함수는 위의 \textbf{Algorithm 1}과 크게 달라지지 않고, 작은 node가 발견되면 해당 node의 rank를 저장하는 부분만 추가되었다.
+
+\subsection{Finding upper bound}
+upper bound는 찾고자하는 값과 같거나 큰 최소의 node를 의미한다. 따라서 root node부터 시작하여 주어진 value보다 큰 값이 나오면 해당 node의 rank를 저장하며 조금씩 작은 node를 찾아 value보다 크거나 같은 최소의 node를 반환하면 된다. 코드의 \emph{FindUpperBoundRank}함수는 위의 \textbf{Algorithm 1}과 크게 달라지지 않고, 큰 node가 발견되면 해당 node의 rank를 저장하는 부분만 추가되었다.
+
+\subsection{RangeSearch}
+upper bound의 rank와 lower bound rank를 계산한 뒤 둘의 차이를 계산하면 range에 속한 node의 개수를 계산 할 수 있다. 자세한 알고리즘은 아래와 같다.
+
+\begin{algorithm}
+	\caption{Range search}
+	\begin{algorithmic}
+		\Function{RangeSearch}{root, k1, k2} \Comment k1 is lower bound, k2 is upper bound
+			\If{root is null}
+				\State \Return{0}
+			\EndIf
+			
+			\State rankOfLowerBound $\gets$ FindLowerBoundRank(root, k1)
+			\State rankOfUpperBound $\gets$ FindUpperBoundRank(root, k2)
+			
+			\State \Return{rankOfUpperBound - rankOfLowerBound + 1}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Time complexity}
+\subsection{Insertion}
+기존의 BST에서 상수 시간에 계산되는 size 증감만 추가되었으므로 time complexity는 O($h$)이다.
+
+\subsection{Deletion}
+기존의 BST에서 상수 시간에 계산되는 size 증감만 추가되었으므로 time complexity는 O($h$)이다.
+
+\subsection{RangeSearch}
+Binary Search Tree에서 lower bound와 upper bound를 찾는건 O($h$)의 시간이 소요된다. 따라서 \emph{RangeSearch}의 전체 time complexity는 2O($h$)=O($h$)이다.
+
+\end{document}

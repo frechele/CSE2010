@@ -1,0 +1,84 @@
+\documentclass[a4page, 11pt]{article}
+
+% packages
+\usepackage{kotex}
+\usepackage{amsthm, amsfonts}
+\usepackage{fullpage}
+
+\title{Proof of Question 3}
+\author{2019xxxxxx 박준영}
+\date{} % clear date
+
+\newenvironment{textbox}
+{
+\begin{center}
+\begin{tabular}{|p{0.95\textwidth}|}
+\hline
+}
+{
+\\ \hline
+\end{tabular}
+\end{center}
+}
+
+\begin{document}
+\maketitle
+
+\section{문제}
+
+Union-Find에서 트리의 height 대신에 tree의 크기, 즉, 노드의 개수에 따라 tree를 merge한다고 하자. 각 subtree의 root에 그 subtree에 속한 노드 개수를 저장하고, 두 개의 tree를 union 할 때는 노드 개수가 작은 트리를 더 큰 트리의 root의 child로 연결한다. 다음의 명제를 (수행된 Union의 개수에 따라) 수학적 귀납법을 이용하여 증명하시오.\\
+
+\begin{textbox}
+T는 \textbf{Union by size}를 이용해 만들어진 Union-Find tree이고, T에 속한 노드의 개수가 $n$, T의 height는 $h$라고 할 때 $h \leq \log_2{n}$이다.
+\end{textbox}
+
+\section{증명}
+
+\textbf{BASIS STEP} root node로만 이루어진 union-find tree의 경우 $n=1$, $h=0$이다. 따라서 $0 \leq \log_2{1} = 0$이므로 주어진 명제가 성립한다.\\
+\\
+\textbf{INDUCTIVE STEP} 
+node의 개수가 $n_1$, height가 $h_1$인 union-find tree T$_1$과 node의 개수가 $n_2$, height가 $h_2$인 union-find tree T$_2$에 대해서 $h_1 \leq \log_2{n_1}$, $h_2 \leq \log_2{n_2}$가 성립한다 가정하자.
+\\
+\\
+\\
+\# \textit{Case 1}: T$_1$과 T$_2$의 node의 개수가 다를 때
+
+$n_1 < n_2$라 해도 일반성을 잃지 않는다. 이때 T$_1$과 T$_2$를 union한 union-find tree T에 대해 $h = \max(h_1 + 1, h_2)$이다.
+
+\begin{eqnarray}
+h_1 &\leq& \log_2{n_1} \nonumber\\
+h_1 + 1 &\leq& \log_2{n_1} \nonumber\\
+&\leq& \log_2{(2n_1)} \leq \log_2{(n_1 + n_2)} \nonumber\\
+&=& \log_2{n}\\
+\nonumber \\
+h_2 &\leq& \log_2{n_2} \nonumber\\
+&\leq& \log_2{(n_1 + n_2)} \nonumber\\
+&=& \log_2{n}
+\end{eqnarray}
+위에서 (1)과 (2)에 의해 $h=\max(h_1 + 1, h_2) \leq \log_2{n}$을 만족하므로 주어진 명제가 성립한다.
+\\
+\\
+\\
+\# \textit{Case 2}: T$_1$과 T$_2$의 node의 개수가 같을 때
+
+이때 T$_1$과 T$_2$를 union한 union-find tree T에 대해 $h = \max(h_1, h_2) + 1$이다.
+
+\begin{eqnarray}
+h_1 &\leq& \log_2{n_1} \nonumber \\
+h_1 + 1 &\leq& \log_2{(2n_1)} \nonumber \\
+&=& \log_2{(n_1 + n_2)} \nonumber \\
+&=& \log_2{n}\\
+\nonumber \\
+h_2 &\leq& \log_2{n_2} \nonumber \\
+h_2 + 1 &\leq& \log_2{(2n_2)} \nonumber \\
+&=& \log_2{(n_1 + n_2)} \nonumber \\
+&=& \log_2{n}
+\end{eqnarray}
+위에서 (3)과 (4)에 의해 $h=\max(h_1, h_2) + 1 \leq \log_2{n}$을 만족하므로 주어진 명제가 성립한다.
+\\
+\\
+\\
+따라서 수학적 귀납법에 의해 주어진 명제는 참이다. \qed
+
+
+\end{document}

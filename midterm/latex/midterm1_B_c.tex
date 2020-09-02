@@ -1,0 +1,60 @@
+\documentclass[a4paper, 11pt]{article}
+
+% packages
+\usepackage{kotex}
+\usepackage{amssymb}
+\usepackage{booktabs, caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{fullpage}
+\usepackage{algorithm, algpseudocode, algorithmicx}
+
+\title{Report of Question1-B-c}
+\author{2019xxxxxx 박준영}
+\date{}
+
+\begin{document}
+\maketitle
+\section{Idea}
+Duplicated key는 같은 key를 가진 node의 left subtree에 있는 모든 key보다 크거나 같기 때문에 right subtree에 insert하여도 문제가 생기지 않는다. 이 점을 이용하면 left subtree에만 insert하는 방법보다 더욱 height를 최적화 할 수 있을 것이다.
+
+\section{Insertion}
+Duplicated key가 insert될 때를 제외하고는 기존의 BST에 insertion과 동일하다. 하지만, duplicated key가 insert되는 경우에는 left subtree와 right subtree 중 height가 작은 곳에 insert하도록 했다.
+\\
+
+\begin{algorithm}
+	\caption{Optimized BST duplicated key insertion}
+	\begin{algorithmic}
+		\Function{Insert}{root, value}
+			\If{root is null}
+				\State root becomes a new node with value
+			\ElsIf{root.value $>$ value}
+				\State root.leftChild = Insert(root.leftChild, value)
+			\ElsIf{root.value $<$ value}
+				\State root.rightChild = Insert(root.rightChild, value)
+			\Else
+				\If{left subtree is higher than right subtree}
+					\State root.rightChild = Insert(root.rightChild, value)
+				\Else
+					\State root.leftChild = Insert(root.leftChild, value)
+				\EndIf
+			\EndIf
+			\State \Return{root}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Deletion}
+기존 Binary Search Tree의 delete와 동일하다.
+
+\section{Finding}
+기존 Binary Search Tree의 find와 동일하다.
+
+\section{Time complexity}
+\subsection{Insertion}
+Subtree의 height를 구할 때 subtree의 모든 node를 순회한다. 따라서 height의 계산은 O($n$)의 time complexity를 가진다. BST에서 insert의 time complexity는 O($h$)이므로 위 insertion 알고리즘의 time complexity는 O($h+n$)=O($n$)이다.
+
+\section{Height of tree}
+모든 input이 duplicated key인 상황이 worst case이다. 이때 left subtree에만 insert하는 경우, $n$개의 node가 insert됐을 때 전체 tree의 height는 O($n$)이다. 하지만 본 보고서의 insertion 알고리즘의 경우, height가 깊어지는 것을 지양하고 duplicated key를 같은 level에 insert하기 때문에 $n$개의 node가 insert됐을 때 전체 tree의 height는 O($\log_2{n}$)이다. 따라서 본 알고리즘을 이용하면 skew되는 것을 피하고 height를 줄일 수 있다.
+
+
+\end{document}

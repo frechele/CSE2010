@@ -1,0 +1,121 @@
+\documentclass[a4paper, 11pt]{article}
+
+% packages
+\usepackage{kotex}
+\usepackage{amssymb}
+\usepackage{booktabs, caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{fullpage}
+\usepackage{algorithm, algpseudocode, algorithmicx}
+
+\title{Report of Question1-B-a}
+\author{2019xxxxxx 박준영}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section{Node Type}
+기본적인 Binary Search Tree의 node 구조체에 중복된 횟수를 나타내는 dup\_count와 중복된 node를 담는 list duplicated를 추가했다.
+\\
+
+\begin{center}
+	\begin{threeparttable}
+		\caption{중복된 node를 list에 관리하는 node type}
+		\begin{tabular}{|c|l|}
+			\hline
+			이름 & 설명\\
+			\hline
+			value & node의 값\\
+			dup\_count & 해당 key가 중복된 횟수\\
+			duplicated & 중복된 node를 담는 list\\
+			leftChild & left subtree의 root 노드\\
+			rightChild & right subtree의 root 노드\\
+		\hline
+		\end{tabular}
+	\end{threeparttable}
+\end{center}
+
+\section{Insertion}
+기존 Binary Search Tree의 insert에서 중복된 node를 관리하는 리스트를 처리하도록 변경했다.
+\\
+
+\begin{algorithm}
+	\caption{BST with duplicated node list insertion}
+	\begin{algorithmic}
+		\Function{Insert}{root, value}
+			\If{root is null}
+				\State root becomes a new node with value
+				\State root.dup\_count $\gets$ 0
+			\ElsIf{root.value $>$ value}
+				\State root.leftChild = Insert(root.leftChild, value)
+			\ElsIf{root.value $<$ value}
+				\State root.rightChild = Insert(root.rightChild, value)
+			\Else
+				\State temp becomes a new node with value
+				\State share dup\_count and duplicated with root and temp
+				\State store temp at root.duplicated
+				\State add 1 to root.dup\_count
+			\EndIf
+			
+			\State \Return{root}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+\pagebreak
+
+\section{Deletion}
+기존 Binary Search Tree의 delete에서 중복된 node를 관리하는 리스트를 처리하도록 변경했다.
+\\
+
+\begin{algorithm}
+	\caption{BST with duplicated node list deletion}
+	\begin{algorithmic}
+		\Function{Delete}{root, value}
+			\If{root is null}
+				\State produce error message
+			\ElsIf{root.value $>$ value}
+				\State root.leftChild = Delete(root.leftChild, value)
+			\ElsIf{root.value $<$ value}
+				\State root.rightChild = Delete(root.rightChild, value)
+			\ElsIf{root.dup\_count $>$ 1}
+				\State subtract 1 to root.dup\_count
+				\State destroy the most recently added duplicated node
+			\ElsIf{root has neither left child nor right child}
+				\State set root value to min value of left subtree
+				\State root.leftChild = Delete(root.leftChild, root.value)
+			\Else
+				\If{root don't have left child}
+					\State set root to right child node
+				\ElsIf{root don't have right child}
+					\State set root to left child node
+				\EndIf
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Finding}
+중복된 node가 있을 때 delete되는 node와 같은 node를 찾기 위해 기존 Binary Search Tree의 find를 변경했다.
+\\
+
+\begin{algorithm}
+	\caption{BST with duplicated node list finding}
+	\begin{algorithmic}
+		\Function{Find}{root, value}
+			\If{root is null}
+				\State \Return{null}
+			\ElsIf{root.value $<$ value}
+				\State \Return{Find(root.rightChild, value)}
+			\ElsIf{root.value $>$ value}
+				\State \Return{Find(root.leftChild, value)}
+			\EndIf
+			\\
+			\If{root has duplicated node(s)}
+				\State\Return{most recently added duplicated node}
+			\EndIf
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+\end{document}

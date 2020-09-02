@@ -1,0 +1,49 @@
+\documentclass[a4paper, 11pt]{article}
+
+% packages
+\usepackage{kotex}
+\usepackage{amssymb}
+\usepackage{booktabs, caption}
+\usepackage[flushleft]{threeparttable}
+\usepackage{fullpage}
+\usepackage{algorithm, algpseudocode, algorithmicx}
+
+\title{Report of Question1-B-b}
+\author{2019xxxxxx 박준영}
+\date{}
+
+\begin{document}
+\maketitle
+
+
+\section{Node Type}
+기본적인 Binary Search Tree의 node 구조체와 동일하다.
+
+\section{Insertion}
+duplicated key가 insert될 때 left subtree에 작은 값이 insert될 때와 같은 방식으로 insert되도록 하였다.
+\\
+
+\begin{algorithm}
+	\caption{BST with duplicated left child insertion}
+	\begin{algorithmic}
+		\Function{Insert}{root, value}
+			\If{root is null}
+				\State root becomes a new node with value
+			\ElsIf{root.value $\geq$ value}
+				\State root.leftChild = Insert(root.leftChild, value)
+			\ElsIf{root.value $<$ value}
+				\State root.rightChild = Insert(root.rightChild, value)
+			\EndIf
+			
+			\State \Return{root}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Deletion}
+기존 Binary Search Tree의 delete와 동일하다.
+
+\section{Finding}
+기존 Binary Search Tree의 find와 동일하다.
+
+\end{document}
